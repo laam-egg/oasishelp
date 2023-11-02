@@ -222,9 +222,9 @@ function JPropertyDialog(
             <DataTypeInput id='dataTypeInput' dataType={dataType} setDataType={setDataType} />
             <label htmlFor='identifierInput'>Property Name</label>
             <IdentifierInput id='identifierInput' identifier={identifier} setIdentifier={setIdentifier} />
-            <label htmlFor='getterAccessModifierInput'>Getter's Access Modifier</label>
+            <label htmlFor='getterAccessModifierInput'>{'Getter\'s Access Modifier'}</label>
             <AccessModifierInput id='getterAccessModifierInput' accessModifier={getterAccessModifier} setAccessModifier={setGetterAccessModifier} />
-            <label htmlFor='setterAccessModifierInput'>Setter's Access Modifier</label>
+            <label htmlFor='setterAccessModifierInput'>{'Setter\'s Access Modifier'}</label>
             <AccessModifierInput id='setterAccessModifierInput' accessModifier={setterAccessModifier} setAccessModifier={setSetterAccessModifier} />
         </div>
 
@@ -244,13 +244,13 @@ function accessModifierDisplayWithFieldName(fieldName: string) {
 
 let dialogCallback: Function | undefined = undefined;
 
-export default ({
+export default function ClassPropertyTable({
     jproperties,
     setJProperties
 }: {
     jproperties: JProperty[],
     setJProperties: Dispatch<SetStateAction<JProperty[]>>,
-}) => {
+}) {
     const [dialogJPropertyInput, setDialogJPropertyInput] = useState(undefined as JProperty|undefined);
 
     const [dialogJPropertyOutput, setDialogJPropertyOutput] = useState(undefined as JProperty|undefined);
