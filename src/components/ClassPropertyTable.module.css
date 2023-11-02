@@ -1,0 +1,41 @@
+.accessModifier_public {
+    color: green;
+}
+
+.accessModifier_protected {
+    color: #8B8000;
+}
+
+.accessModifier_private {
+    color: red;
+}
+
+.accessModifier_default {
+    color: black;
+}
+
+.accessModifier_disabled {
+    color: gray;
+}
+
+.accessModifier_public,
+.accessModifier_protected,
+.accessModifier_private,
+.accessModifier_default {
+    font-weight: bold;
+}
+
+.propertyDialogFields {
+    display: grid;
+    grid-template-columns: 1.25fr auto;
+    grid-gap: 7px;
+    justify-items: start;
+    align-items: center;
+}
+
+.propertyDialogButtons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+}
