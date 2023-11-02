@@ -20,7 +20,6 @@ import CodeEditor from '@uiw/react-textarea-code-editor';
 import { Button } from "primereact/button";
 import ClassPropertyTable, { AccessModifierInput, IdentifierInput } from "./ClassPropertyTable";
 import { JClass, JProperty } from "@/lib/jdocgen";
-import { InputText } from "primereact/inputtext";
 
 export default function OutputCodeEditor() {
     const [jclassAccessModifier, setJClassAccessModifier] = useState(undefined as string|undefined);
@@ -37,12 +36,19 @@ export default function OutputCodeEditor() {
         if (jclassAccessModifier === undefined) {
             return alert('You have to select your class\' access modifier !');
         }
-
-        const c = new JClass(
-            jclassAccessModifier,
-            jclassName,
-            '', ''
-        );
+        let c;
+        try {
+            c = new JClass(
+                jclassAccessModifier,
+                jclassName,
+                undefined, undefined
+            );
+        } catch (e: any) {
+            if (!jclassName) {
+                return alert(`Error: Class name cannot be empty.`);
+            }
+            return alert(`Error: ${e?.message}`)
+        }
         for (const p of jproperties) {
             c.addProperty(p);
         }
@@ -70,7 +76,7 @@ export default function OutputCodeEditor() {
         })
         .catch((err: any) => {
             setCodeGenerationSuccessful(false);
-            alert("HTTP ERROR" + err?.message);
+            alert(`HTTP ERROR:  ${err?.message}`);
             console.log(err);
         });
     };

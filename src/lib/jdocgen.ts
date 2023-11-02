@@ -162,7 +162,7 @@ export class JValidator {
      * @returns {boolean} Whether this name is a valid Java identifier.
      */
     static checkIdentifier(name: string): boolean {
-        return name.match(/^[A-Za-z_$][A-Za-z_$0-9]*$/) !== undefined;
+        return name.match(/^[A-Za-z_$][A-Za-z_$0-9]*$/) !== null;
     }
 
     static validateIdentifier(name: string) {
