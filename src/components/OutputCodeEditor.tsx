@@ -82,7 +82,7 @@ export default function OutputCodeEditor() {
     };
 
     return <div>
-        <h1>Generate your Java class with Javadoc autofill</h1>
+        <h1>Generate your Java classes with Javadoc autofill</h1>
         <div style={{ display: 'inline-block', padding: '5px' }}>
             <AccessModifierInput id='jclassAccessModifierInput' accessModifier={jclassAccessModifier} setAccessModifier={setJClassAccessModifier} />
             <span style={{ padding: '5px', fontSize: 'large' }}>class</span>
