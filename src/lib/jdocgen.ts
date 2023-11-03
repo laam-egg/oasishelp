@@ -320,7 +320,7 @@ export class JFunction {
      * }
      */
     toString(): string {
-        let buf = `/**\n${this.jdoc.replace('\n', '\n')}\n*/\n`;
+        let buf = `/**\n${this.jdoc.replace('\n', '\n')}*/\n`;
         if (this.accessModifier) {
             buf += this.accessModifier + " ";
         }
@@ -354,7 +354,7 @@ export class JFunction {
         // List parameters
         this.parameters.map((p) => {
             const paramDescription = JFunction._breakIdentifierIntoLowerCasedTokens(p.identifier, 'camel').join(' ');
-            jdoc += `@param ${p.identifier} - The ${paramDescription}\n`;
+            jdoc += `@param ${p.identifier} - The ${paramDescription}.\n`;
         });
 
         if (this.returnType !== 'void') {
