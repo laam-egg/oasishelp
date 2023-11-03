@@ -52,7 +52,7 @@ có:
 khi đó OASIS sẽ không còn bắt lỗi Javadoc
 của các bạn nữa !
 
-**TRẢI NGHIỆM NGAY** tại <oasishelper.vercel.app>
+**TRẢI NGHIỆM NGAY** tại <https://oasishelper.vercel.app>
 
 ## License
 

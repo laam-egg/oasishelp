@@ -39,7 +39,7 @@ automatically generate:
 so that OASIS will no longer catch your Javadoc
 errors !
 
-**TRY IT OUT** at <oasishelper.vercel.app>
+**TRY IT OUT** at <https://oasishelper.vercel.app>
 
 ## License
 
