@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# OASIS Helper
 
-## Getting Started
+[English version](./README-en_US.md)
 
-First, run the development server:
+## Giới thiệu
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Đây là một web app tự động viết Javadoc
+cho:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+ 1. các thuộc tính của một lớp đối
+ tượng,
+ 2. các phương thức getter/setter
+ của chúng,
+ 3. cũng như các loại phương thức
+ khác
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+trong một file mã nguồn Java điển hình.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+[UET-OASIS](https://oasis.uet.vnu.edu.vn/)
+là nền tảng học trực tuyến dành cho các
+sinh viên theo học môn Lập trình hướng
+đối tượng (OOP) ở UET, trong đó có mình.
 
-## Learn More
+Nền tảng này yêu cầu chúng mình phải viết
+Javadoc cho **tất cả** các phương thức
+trong mã nguồn Java chúng mình viết ra.
+Khi số lượng phương thức còn ít thì điều
+đó không thành vấn đề. Tuy nhiên, khi đề
+bài yêu cầu một lớp đối tượng có quá
+nhiều thuộc tính, số lượng phương thức
+tăng lên rất nhanh (vì mỗi thuộc tính
+có hai phương thức getter và setter,
+còn chưa kế các phương thức khác).
+**Viết Javadoc cho các phương thức đó hoàn**
+**toàn bằng tay rất mất thời gian.**
 
-To learn more about Next.js, take a look at the following resources:
+Vì vậy chiếc web app này ra đời. Bạn chỉ
+cần nhập thông tin chung của lớp đối tượng,
+thêm các thuộc tính cho nó, và các phương
+thức khác (không phải getter và setter của
+các thuộc tính). App sẽ tự sinh code gồm
+có:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+ 1. các thuộc tính đã cho,
+ 2. các phương thức getter và setter của
+ các thuộc tính đó,
+ 3. các phương thức khác bạn đã cho,
+ 4. **và tất nhiên là Javadoc cho tất cả**
+ **các phương thức, được sinh tự động**
+ **hoàn toàn**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+khi đó OASIS sẽ không còn bắt lỗi Javadoc
+của các bạn nữa !
 
-## Deploy on Vercel
+**TRẢI NGHIỆM NGAY** tại <oasishelper.vercel.app>
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Mã nguồn của dự án này được phân phối với điều
+kiện bảo đảm các điều khoản trong Giấy phép BSD,
+biến thể 3 điều khoản. Xem file
+[`LICENSE.txt`](./LICENSE.txt) để biết thêm
+chi tiết.
