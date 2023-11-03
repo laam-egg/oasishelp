@@ -20,6 +20,7 @@ import CodeEditor from '@uiw/react-textarea-code-editor';
 import { Button } from "primereact/button";
 import ClassPropertyTable, { AccessModifierInput, IdentifierInput } from "./ClassPropertyTable";
 import { JClass, JProperty } from "@/lib/jdocgen";
+import { prettify } from "@/lib/prettier";
 
 export default function OutputCodeEditor() {
     const [jclassAccessModifier, setJClassAccessModifier] = useState(undefined as string|undefined);
@@ -32,7 +33,7 @@ export default function OutputCodeEditor() {
 
     const [codeGenerationSuccessful, setCodeGenerationSuccessful] = useState(false);
 
-    const generateCode = () => {
+    const generateCode = async () => {
         if (jclassAccessModifier === undefined) {
             return alert('You have to select your class\' access modifier !');
         }
@@ -53,32 +54,15 @@ export default function OutputCodeEditor() {
             c.addProperty(p);
         }
 
-        fetch('/api/prettify/java', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                code: c.toString(),
-            }),
-        })
-        .then((res) => res.json())
-        .then(({ success, code, message }) => {
-            if (success) {
-                setCodeGenerationSuccessful(true);
-                setCode(code);
-            } else {
+        try {
+            const newCode = await prettify(c.toString());
+            setCodeGenerationSuccessful(true);
+            setCode(newCode);
+        } catch (e: any) {
                 setCodeGenerationSuccessful(false);
                 setCode('');
-                alert("ERROR: " + message);
-            }
-        })
-        .catch((err: any) => {
-            setCodeGenerationSuccessful(false);
-            alert(`HTTP ERROR:  ${err?.message}`);
-            console.log(err);
-        });
+                alert("ERROR: " + e?.message);
+        }
     };
 
     return <div>
