@@ -34,34 +34,34 @@ export default function OutputCodeEditor() {
     const [codeGenerationSuccessful, setCodeGenerationSuccessful] = useState(false);
 
     const generateCode = async () => {
-        if (jclassAccessModifier === undefined) {
-            return alert('You have to select your class\' access modifier !');
-        }
-        let c;
         try {
-            c = new JClass(
-                jclassAccessModifier,
-                jclassName,
-                undefined, undefined
-            );
-        } catch (e: any) {
-            if (!jclassName) {
-                return alert(`Error: Class name cannot be empty.`);
+            if (jclassAccessModifier === undefined) {
+                throw new Error('You have to select your class\' access modifier !');
             }
-            return alert(`Error: ${e?.message}`)
-        }
-        for (const p of jproperties) {
-            c.addProperty(p);
-        }
+            let c;
+            try {
+                c = new JClass(
+                    jclassAccessModifier,
+                    jclassName,
+                    undefined, undefined
+                );
+            } catch (e: any) {
+                if (!jclassName) {
+                    throw new Error('Class name cannot be empty.');
+                }
+                throw e;
+            }
+            for (const p of jproperties) {
+                c.addProperty(p);
+            }
 
-        try {
             const newCode = await prettify(c.toString());
             setCodeGenerationSuccessful(true);
             setCode(newCode);
         } catch (e: any) {
-                setCodeGenerationSuccessful(false);
-                setCode('');
-                alert("ERROR: " + e?.message);
+            setCodeGenerationSuccessful(false);
+            setCode('');
+            alert("ERROR: " + e?.message);
         }
     };
 
@@ -86,7 +86,7 @@ export default function OutputCodeEditor() {
             }}>
             
             <p style={{
-                display: codeGenerationSuccessful ? 'block' : 'none',
+                display: (codeGenerationSuccessful ? 'block' : 'none'),
             }}>
                 Your code has been successfully generated !<br />
                 You can edit your below code directly, then copy and paste it to IntelliJ.
