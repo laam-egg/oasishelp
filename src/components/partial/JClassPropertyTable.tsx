@@ -6,12 +6,12 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-import { JProperty, JPropertyAttrInput } from "@/lib/jdocgen";
+import { JProperty, JPropertyAttrInput } from "@/lib/jdocgen/jdocgen";
 import { Dialog } from "primereact/dialog";
-import AccessModifierInput from './partial/AccessModifierInput';
-import DataTypeInput from './partial/DataTypeInput';
-import IdentifierInput from './partial/IdentifierInput';
-import { accessModifierDisplayWithFieldName } from './partial/AccessModifierDisplayTemplate';
+import AccessModifierInput from './AccessModifierInput';
+import DataTypeInput from './DataTypeInput';
+import IdentifierInput from './IdentifierInput';
+import { accessModifierDisplayWithFieldName } from './AccessModifierDisplayTemplate';
 
 function JPropertyDialogButtons({
     addNew, pAttrs, setJProperty, setDialogVisible
@@ -59,15 +59,15 @@ function JPropertyDialogButtons({
     </div>;
 }
 
-function JPropertyDialog(
-    { visible, setVisible, jproperty, setJProperty }
-    : {
-        visible: boolean,
-        setVisible: Dispatch<SetStateAction<boolean>>,
-        jproperty: JProperty|undefined,
-        setJProperty: Dispatch<SetStateAction<JProperty|undefined>>,
-    }
-) {
+function JPropertyDialog({
+    visible, setVisible, jproperty, setJProperty, setDirty
+} : {
+    visible: boolean,
+    setVisible: Dispatch<SetStateAction<boolean>>,
+    jproperty: JProperty|undefined,
+    setJProperty: Dispatch<SetStateAction<JProperty|undefined>>,
+    setDirty: Dispatch<SetStateAction<boolean>>,
+}) {
     const addNew: boolean = (jproperty === undefined);
 
     const [accessModifier, setAccessModifier] = useState(addNew ? undefined : (jproperty as JProperty).accessModifier);
@@ -93,15 +93,15 @@ function JPropertyDialog(
     >
         <div className={style.propertyDialogFields}>
             <label htmlFor='accessModifierInput'>Access Modifier</label>
-            <AccessModifierInput id='accessModifierInput' accessModifier={accessModifier} setAccessModifier={setAccessModifier} />
+            <AccessModifierInput id='accessModifierInput' accessModifier={accessModifier} setAccessModifier={setAccessModifier} setDirty={setDirty} />
             <label htmlFor='dataTypeInput'>Data Type</label>
-            <DataTypeInput id='dataTypeInput' dataType={dataType} setDataType={setDataType} />
+            <DataTypeInput id='dataTypeInput' dataType={dataType} setDataType={setDataType} setDirty={setDirty} />
             <label htmlFor='identifierInput'>Property Name</label>
-            <IdentifierInput id='identifierInput' identifier={identifier} setIdentifier={setIdentifier} />
+            <IdentifierInput id='identifierInput' identifier={identifier} setIdentifier={setIdentifier} setDirty={setDirty} />
             <label htmlFor='getterAccessModifierInput'>{'Getter\'s Access Modifier'}</label>
-            <AccessModifierInput id='getterAccessModifierInput' accessModifier={getterAccessModifier} setAccessModifier={setGetterAccessModifier} />
+            <AccessModifierInput id='getterAccessModifierInput' accessModifier={getterAccessModifier} setAccessModifier={setGetterAccessModifier} setDirty={setDirty} />
             <label htmlFor='setterAccessModifierInput'>{'Setter\'s Access Modifier'}</label>
-            <AccessModifierInput id='setterAccessModifierInput' accessModifier={setterAccessModifier} setAccessModifier={setSetterAccessModifier} />
+            <AccessModifierInput id='setterAccessModifierInput' accessModifier={setterAccessModifier} setAccessModifier={setSetterAccessModifier} setDirty={setDirty} />
         </div>
 
         <JPropertyDialogButtons
@@ -118,10 +118,12 @@ let dialogCallback: Function | undefined = undefined;
 
 export default function JClassPropertyTable({
     jproperties,
-    setJProperties
+    setJProperties,
+    setDirty,
 }: {
     jproperties: JProperty[],
     setJProperties: Dispatch<SetStateAction<JProperty[]>>,
+    setDirty: Dispatch<SetStateAction<boolean>>,
 }) {
     const [dialogJPropertyInput, setDialogJPropertyInput] = useState(undefined as JProperty|undefined);
 
@@ -147,6 +149,7 @@ export default function JClassPropertyTable({
                 }
             }
             setJProperties(newJProperties);
+            setDirty(true);
         }
 
         return <>
@@ -218,6 +221,7 @@ export default function JClassPropertyTable({
     setVisible={setDialog}
     jproperty={dialogJPropertyInput}
     setJProperty={setDialogJPropertyOutput}
+    setDirty={setDirty}
     ></JPropertyDialog>
     </div>;
 }

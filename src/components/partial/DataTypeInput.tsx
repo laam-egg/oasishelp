@@ -5,11 +5,12 @@ import { AutoComplete } from "primereact/autocomplete";
 import { Dispatch, SetStateAction, useState } from "react";
 
 export default function DataTypeInput({
-    id, dataType, setDataType
+    id, dataType, setDataType, setDirty
 } : {
     id: string,
     dataType: string,
     setDataType: Dispatch<SetStateAction<string>>,
+    setDirty: Dispatch<SetStateAction<boolean>>,
 }) {
     const basicDataTypes = [
         'String',
@@ -58,7 +59,10 @@ export default function DataTypeInput({
         });
         setCurrentSuggestions(suggestions);
     }}
-    onChange={(event) => setDataType(event.value)}
+    onChange={(event) => {
+        setDataType(event.value);
+        setDirty(true);
+    }}
     dropdown
     />
     </>;

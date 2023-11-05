@@ -1,5 +1,12 @@
 export class JdocGenError extends Error {};
 
+function trapError(rootCause: any, newException: any): never {
+    if (rootCause instanceof JdocGenError) {
+        throw rootCause;
+    }
+    throw newException;
+}
+
 export class JFormatEngine {
     public readonly tab: string;
 
@@ -79,7 +86,6 @@ export class JFormatEngine {
             // Reread indentation after nest check
             indentation = this.getCurrentLineIndentation();
             this.buf += indentation + this.currentLine + '\n';
-            console.log(`nestLevel=${this.nestLevel} inJdoc=${this.inJdoc} - ${this.currentLine}`)
             this.nestLevel = newNestLevel;
             this.currentLine = '';
         }
@@ -251,6 +257,27 @@ export class JVariable implements JVariableAttrInput {
     toString(): string {
         return this.dataType + " " + this.identifier;
     }
+
+    /**
+     * Converts this object to a JSON-serializable object
+     * that can be later converted back to a JVariable
+     * instance using thisclass::fromSerializable().
+     */
+    toSerializable(): object {
+        return {
+            dataType: this.dataType,
+            identifier: this.identifier,
+        };
+    }
+
+    static fromSerializable(body: any): JVariable {
+        try {
+            const { dataType, identifier } = body;
+            return new JVariable(dataType, identifier);
+        } catch (e) {
+            trapError(e, new JdocGenError(`Damaged JVariable serializable: ${JSON.stringify(body)}`));
+        }
+    }
 }
 
 /**
@@ -265,6 +292,22 @@ export class JParameter extends JVariable {
     constructor(dataType: string, identifier: string) {
         super(dataType, identifier);
     }
+
+    toSerializable(): object {
+        return {
+            dataType: this.dataType,
+            identifier: this.identifier
+        };
+    }
+
+    static fromSerializable(body: any): JParameter {
+        try {
+            const { dataType, identifier } = body;
+            return new JParameter(dataType, identifier);
+        } catch (e) {
+            trapError(e, new JdocGenError(`Damaged JParameter serializable: ${JSON.stringify(body)}`));
+        }
+    }
 }
 
 export class JFunction {
@@ -274,6 +317,41 @@ export class JFunction {
     public readonly parameters: JParameter[];
     public readonly body: string;
     public readonly jdoc: string;
+    private readonly jdocDefaultGenerated: boolean;
+
+    toSerializable(): object {
+        return {
+            accessModifier: this.accessModifier,
+            returnType: this.returnType,
+            identifier: this.identifier,
+            parameters: this.parameters.map((p) => p.toSerializable()),
+            body: this.body,
+            jdoc: this.jdocDefaultGenerated ? undefined : this.jdoc,
+        };
+    }
+
+    static fromSerializable(_body: any): JFunction {
+        try {
+            const {
+                accessModifier,
+                returnType,
+                identifier,
+                parameters,
+                body,
+                jdoc
+            } = _body;
+            return new JFunction(
+                accessModifier,
+                returnType,
+                identifier,
+                parameters.map(JParameter.fromSerializable),
+                body,
+                jdoc
+            );
+        } catch (e) {
+            trapError(e, new JdocGenError(`Damaged JFunction serializable: ${JSON.stringify(_body)}`));
+        }
+    }
 
     /**
      * 
@@ -292,6 +370,8 @@ export class JFunction {
         this.parameters = [...parameters];
 
         this.body = body;
+
+        this.jdocDefaultGenerated = jdoc ? true : false;
 
         this.jdoc = jdoc ?? this.generateDefaultJdoc();
     }
@@ -420,9 +500,40 @@ export interface JPropertyAttrInput extends JVariableAttrInput {
 
 export class JProperty extends JVariable implements JPropertyAttrInput {
     public accessModifier: string;
-    private functions: JFunction[];
+    public functions: JFunction[];
     public readonly getterAccessModifier: string|undefined;
     public readonly setterAccessModifier: string|undefined;
+
+    toSerializable(): object {
+        return {
+            accessModifier: this.accessModifier,
+            dataType: this.dataType,
+            identifier: this.identifier,
+            getterAccessModifier: this.getterAccessModifier,
+            setterAccessModifier: this.setterAccessModifier
+        };
+    }
+
+    static fromSerializable(body: any): JProperty {
+        try {
+            const {
+                accessModifier,
+                dataType,
+                identifier,
+                getterAccessModifier,
+                setterAccessModifier
+            } = body;
+            return new JProperty(
+                accessModifier,
+                dataType,
+                identifier,
+                getterAccessModifier,
+                setterAccessModifier
+            );
+        } catch (e) {
+            trapError(e, new JdocGenError(`Damaged JProperty serializable: ${JSON.stringify(body)}`));
+        }
+    }
 
     /**
      * 
@@ -479,13 +590,6 @@ export class JProperty extends JVariable implements JPropertyAttrInput {
         buf += super.toString();
         return buf;
     }
-
-    /**
-     * @returns {JFunction[]} A list of this property's getter/setter functions, if any.
-     */
-    getFunctions(): JFunction[] {
-        return [...this.functions];
-    }
 }
 
 export class JClass {
@@ -495,6 +599,45 @@ export class JClass {
     public readonly implementsWhat: string|undefined;
     public readonly properties: JProperty[];
     public readonly functions: JFunction[];
+
+    toSerializable(): object {
+        return {
+            accessModifier: this.accessModifier,
+            identifier: this.identifier,
+            extendsWhat: this.extendsWhat,
+            implementsWhat: this.implementsWhat,
+            properties: this.properties.map((p) => p.toSerializable()),
+            functions: this.functions.map((f) => f.toSerializable()),
+        };
+    }
+
+    static fromSerializable(body: any): JClass {
+        try {
+            const {
+                accessModifier,
+                identifier,
+                extendsWhat,
+                implementsWhat,
+                properties,
+                functions,
+            } = body;
+            const c = new JClass(
+                accessModifier,
+                identifier,
+                extendsWhat,
+                implementsWhat
+            );
+            for (const p of properties) {
+                c.addProperty(JProperty.fromSerializable(p));
+            }
+            for (const f of functions) {
+                c.addFunction(JFunction.fromSerializable(f));
+            }
+            return c;
+        } catch (e) {
+            trapError(e, new JdocGenError(`Damaged JClass serializable: ${JSON.stringify(body)}`));
+        }
+    }
 
     /**
      * 
@@ -516,14 +659,7 @@ export class JClass {
             this.implementsWhat = JValidator.validateIdentifier(implementsWhat);
         }
 
-        /**
-         * @type {JProperty[]}
-         */
         this.properties = [];
-
-        /**
-         * @type {JFunction[]}
-         */
         this.functions = [];
     }
 
@@ -614,7 +750,7 @@ export class JClass {
         for (let p of this.properties) {
             insertNecessaryNewlinesBeforeMemberDefinition();
             buf.write(p.toString() + ';');
-            functions.push(...p.getFunctions());
+            functions.push(...p.functions);
         }
 
         ////////////////////////////

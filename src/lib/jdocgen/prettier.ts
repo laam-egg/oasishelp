@@ -7,7 +7,7 @@
 // I have to import it like the following (huge
 // thanks to https://stackoverflow.com/a/61100914/13680015)
 import * as prettier from 'prettier/standalone';
-import * as prettierPluginJava from '@/lib/prettierPluginJava';
+import * as prettierPluginJava from '@/lib/jdocgen/prettierPluginJava';
 
 /**
  * Formats Java code with prettier and prettier-plugin-java

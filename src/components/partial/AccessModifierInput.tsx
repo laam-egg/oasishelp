@@ -5,11 +5,12 @@ import { Dropdown } from "primereact/dropdown";
 import { Dispatch, SetStateAction } from "react";
 
 export default function AccessModifierInput({
-    id, accessModifier, setAccessModifier
+    id, accessModifier, setAccessModifier, setDirty
 } : {
     id: string,
     accessModifier: string|undefined,
     setAccessModifier: Dispatch<SetStateAction<string|undefined>>,
+    setDirty: Dispatch<SetStateAction<boolean>>,
 }) {
     return <>
     <Dropdown
@@ -18,6 +19,7 @@ export default function AccessModifierInput({
     onChange={(event) => {
         const newAccessModifier = event.target.value;
         setAccessModifier(newAccessModifier === '(default)' ? '' : newAccessModifier);
+        setDirty(true);
     }}
     options={[
         'public',
