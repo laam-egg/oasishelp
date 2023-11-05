@@ -27,12 +27,13 @@ export default function RootLayout({
               <span>{"Since November 6th 2023 this app saves your Java classes in your browser so that you won't lose them when closing this tab."}</span>
               <br />
               <span>{"Also, when you open multiple tabs of this app, then changes in a tab will be synchronized in others."}</span>
+              <br />
+              <a href='https://github.com/laam-egg/oasishelp' target='_blank'>{'View source code on GitHub.'}</a>
             </small>
             <br />
             <br />
             {children}
             <br />
-            <div><a href='https://github.com/laam-egg/oasishelp' target='_blank'>{'View source code on GitHub.'}</a></div>
             <GlobalToast />
           </body>
         </GlobalToastContextProvider>
