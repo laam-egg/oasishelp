@@ -18,11 +18,13 @@ import { useState } from "react";
 
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { Button } from "primereact/button";
-import ClassPropertyTable, { AccessModifierInput, IdentifierInput } from "./ClassPropertyTable";
+import JClassPropertyTable from "./JClassPropertyTable";
 import { JClass, JProperty } from "@/lib/jdocgen";
 import { prettify } from "@/lib/prettier";
+import AccessModifierInput from "./partial/AccessModifierInput";
+import IdentifierInput from "./partial/IdentifierInput";
 
-export default function OutputCodeEditor() {
+export default function JClassCodeArea() {
     const [jclassAccessModifier, setJClassAccessModifier] = useState(undefined as string|undefined);
 
     const [jclassName, setJClassName] = useState('');
@@ -74,7 +76,7 @@ export default function OutputCodeEditor() {
         </div>
 
         <h2>Properties</h2>
-        <ClassPropertyTable jproperties={jproperties} setJProperties={setJProperties} />
+        <JClassPropertyTable jproperties={jproperties} setJProperties={setJProperties} />
 
         <h2>Output</h2>
         <div>
