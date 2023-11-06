@@ -1,4 +1,4 @@
-import { JClass, JProperty } from '@/lib/jdocgen/jdocgen';
+import { JClass, JProperty, JValidator } from '@/lib/jdocgen/jdocgen';
 import { describe, expect } from '@jest/globals';
 
 describe('jdocgen test', () => {
@@ -32,5 +32,37 @@ describe('jdocgen test', () => {
         expect(d.implementsWhat).toBe(c.implementsWhat);
         expect(d.properties.length).toBe(1);
         expect(d.properties[0].identifier).toBe(c.properties[0].identifier);
-    })
+    });
+
+    it('should validate Java data type correctly', () => {
+        expect(JValidator.checkDataType('s')).toBe(true);
+        expect(JValidator.checkDataType('SimpleIdentifier')).toBe(true);
+        expect(JValidator.checkDataType('j.l')).toBe(true);
+        expect(JValidator.checkDataType('java.lang')).toBe(true);
+        expect(JValidator.checkDataType('java.lang.Exception')).toBe(true);
+        expect(JValidator.checkDataType('ArrayList<String>')).toBe(true);
+        expect(JValidator.checkDataType('java.util.ArrayList<String>')).toBe(true);
+        expect(JValidator.checkDataType('java.util.ArrayList<ArrayList<String>>')).toBe(true);
+        expect(JValidator.checkDataType('java.util.ArrayList<java.util.ArrayList<String>>')).toBe(true);
+        expect(JValidator.checkDataType('A<B<C<D.E.F<G>.H>>>')).toBe(true);
+
+        expect(JValidator.checkDataType('')).toBe(false);
+        expect(JValidator.checkDataType('.')).toBe(false);
+        expect(JValidator.checkDataType('s.')).toBe(false);
+        expect(JValidator.checkDataType('.s')).toBe(false);
+        expect(JValidator.checkDataType('SimpleIdentifier.')).toBe(false);
+        expect(JValidator.checkDataType('..s')).toBe(false);
+        expect(JValidator.checkDataType('java..lang.Exception')).toBe(false);
+        expect(JValidator.checkDataType('java.lang.Exception.')).toBe(false);
+        expect(JValidator.checkDataType('>')).toBe(false);
+        expect(JValidator.checkDataType('<')).toBe(false);
+        expect(JValidator.checkDataType('.<')).toBe(false);
+        expect(JValidator.checkDataType('S.<')).toBe(false);
+        expect(JValidator.checkDataType('S<E>.')).toBe(false);
+        expect(JValidator.checkDataType('S.E<>')).toBe(false);
+        expect(JValidator.checkDataType('java.util.ArrayList<String')).toBe(false);
+        expect(JValidator.checkDataType('java.util.ArrayList<String.')).toBe(false);
+        expect(JValidator.checkDataType('java.util.ArrayList<<String>>')).toBe(false);
+        expect(JValidator.checkDataType('A<B<C<D>')).toBe(false);
+    });
 });

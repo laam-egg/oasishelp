@@ -181,14 +181,75 @@ export class JValidator {
     /**
      * Checks whether the given name is a valid Java data type name.
      * 
-     * Currently, this function just checks whether the name is a valid
-     * identifier, but this behavior may be changed in the future.
+     * Currently, this function considers a name as a valid data type if
+     * it is a valid Java identifier with the following exceptions:
+     * 
+     * 1. It might have dots between characters, which separate the name
+     *    into distinct parts, each of which is itself a valid Java
+     *    identifier.
+     * 2. It might have matched template/generic parentheses <>.
+     * 
+     * See examples.
      * 
      * @param {string} name Any name to check.
      * @returns {boolean} Whether this name is a valid Java data type name.
+     * 
+     * @example
+     * // Valid data types
+     * SimpleIdentifier
+     * java.lang.Exception
+     * java.util.ArrayList<String>
+     * java.util.ArrayList<java.util.ArrayList<String>>
+     * 
+     * // Invalid data types
+     * SimpleIdentifier.
+     * java..lang.Exception
+     * java.util.ArrayList<String
+     * java.util.<String>
+     * java.util.ArrayList<<String>>
      */
     static checkDataType(name: string): boolean {
-        return this.checkIdentifier(name);
+        const parenthesesStack = [];
+        const regularIdentifier = /^[A-Za-z_$][A-Za-z_$0-9]*$/;
+        let currentToken = '';
+        let parenthesesClosed = false;
+        let expectingNonemptyToken = true;
+        for (const c of name) {
+            switch (c) {
+                case '>':
+                    if (!parenthesesStack || c != parenthesesStack.pop()) {
+                        return false;
+                    }
+                    parenthesesClosed = true;
+                    // no break;
+                case '<':
+                    if (c == '<') parenthesesStack.push('>');
+                    // no break;
+                case '.':
+                    if (parenthesesClosed) {
+                        if (c == '.') parenthesesClosed = false;
+                    } else if (!currentToken.match(regularIdentifier)) {
+                        return false;
+                    }
+                    currentToken = '';
+                    if (c != '>') expectingNonemptyToken = true;
+                    break;
+                
+                default:
+                    if (parenthesesClosed) return false;
+                    currentToken += c;
+                    expectingNonemptyToken = false;
+                    break;
+            }
+        }
+        if (parenthesesStack.length > 0) return false;
+        if (expectingNonemptyToken) return false;
+        if (currentToken) {
+            if (!currentToken.match(regularIdentifier)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     static validateDataType(name: string) {
